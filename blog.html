@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Riya Shah</title>
+  <meta name="description" content="Notes from Riya Shah on healthcare, pre-med life, and learning medicine from the bedside up.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23E2451E'/><text x='8' y='12' font-size='11' font-family='monospace' fill='%23F5EFE3' text-anchor='middle'>R</text></svg>">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html"><span class="dot"></span>RIYA&nbsp;SHAH</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">MENU</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
+        <li><a href="index.html#education">Education</a></li>
+        <li><a href="blog.html" aria-current="page">Blog</a></li>
+        <li><a href="write.html">Write</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main" class="section" style="border-bottom:none">
+    <div class="wrap">
+      <span class="tab"><span class="num">§</span> The Notebook</span>
+      <h2>Writing &amp; reflections</h2>
+      <p class="lead">Thinking out loud about healthcare, the pre-med road, and what I'm learning from patients and books alike.</p>
+      <div class="btn-row">
+        <a class="btn ghost" href="write.html">+ New post</a>
+      </div>
+
+      <!-- list or single post renders here -->
+      <div id="blog-mount" class="post-list"></div>
+    </div>
+  </main>
+
+  <footer class="footer wrap">
+    <span>© <span id="year"></span> Riya Shah</span>
+    <span><a href="index.html" style="color:inherit">← Back to portfolio</a></span>
+  </footer>
+
+  <script src="posts.js"></script>
+  <script src="app.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

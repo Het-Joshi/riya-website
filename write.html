@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Write a post — Riya Shah</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23E2451E'/><text x='8' y='12' font-size='11' font-family='monospace' fill='%23F5EFE3' text-anchor='middle'>R</text></svg>">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html"><span class="dot"></span>RIYA&nbsp;SHAH</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">MENU</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="write.html" aria-current="page">Write</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main" class="section" style="border-bottom:none">
+    <div class="wrap">
+      <span class="tab"><span class="num">✎</span> Writer</span>
+      <h2>Write a new post <span class="saved-flag" id="saved-flag"></span></h2>
+      <p class="lead">Type on the left, see it live on the right. When you're happy, click <strong>Generate post</strong> and follow the two steps it gives you. No AI, no account — your draft auto-saves in this browser.</p>
+
+      <div class="editor-grid">
+        <!-- LEFT: form -->
+        <section aria-label="Editor">
+          <div class="field">
+            <label for="f-title">Title</label>
+            <input id="f-title" type="text" placeholder="What's the post about?">
+          </div>
+          <div class="grid two" style="gap:1rem">
+            <div class="field">
+              <label for="f-date">Date</label>
+              <input id="f-date" type="date">
+            </div>
+            <div class="field">
+              <label for="f-tags">Tags (comma separated)</label>
+              <input id="f-tags" type="text" placeholder="pre-med, reflection">
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-excerpt">Short summary (one line)</label>
+            <input id="f-excerpt" type="text" placeholder="A sentence that previews the post.">
+          </div>
+          <div class="field">
+            <label for="f-body">Body — write in Markdown</label>
+            <textarea id="f-body" placeholder="Write here...
+
+## A heading
+Some thoughts.
+
+**Bold**, *italic*, [a link](https://example.com).
+
+- a list item
+- another item
+
+> A quote that matters."></textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn primary" id="btn-generate" type="button">Generate post</button>
+            <button class="btn ghost" id="btn-clear" type="button">Clear draft</button>
+          </div>
+        </section>
+
+        <!-- RIGHT: preview -->
+        <section class="panel" aria-label="Live preview">
+          <div class="panel-head">Live preview</div>
+          <div class="p-meta" id="pv-meta" style="font-family:var(--mono);font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em"></div>
+          <h1 id="pv-title" style="font-family:var(--serif);font-size:1.8rem;margin:.4rem 0 1rem">Your title appears here</h1>
+          <div class="p-tags" id="pv-tags" style="margin-bottom:1rem"></div>
+          <div class="article-body preview-body" id="pv-body"><p style="color:var(--muted)">Start typing to see your post.</p></div>
+        </section>
+      </div>
+
+      <!-- OUTPUT -->
+      <section id="output" style="margin-top:2rem; display:none">
+        <span class="tab"><span class="num">→</span> Publish</span>
+        <h2 style="font-size:1.5rem">Two steps to publish</h2>
+        <ol style="font-family:var(--mono);font-size:.9rem;line-height:1.7;max-width:60ch">
+          <li>Click <strong>Copy</strong> below to copy your post.</li>
+          <li>Open <code>posts.js</code>, paste it right under the line
+              <code>window.POSTS = [</code>, save, and upload the file.</li>
+        </ol>
+        <div class="btn-row" style="margin:1rem 0">
+          <button class="btn teal" id="btn-copy" type="button">Copy</button>
+        </div>
+        <pre class="codeout" id="codeout" tabindex="0"></pre>
+        <div class="hint">Tip: the newest post goes at the top of the list. Each post needs a comma after its closing <code>}</code> if another post follows it.</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer wrap">
+    <span>© <span id="year"></span> Riya Shah</span>
+    <span><a href="blog.html" style="color:inherit">← Back to blog</a></span>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    var KEY = 'riya-draft-v1';
+    var $ = function (id) { return document.getElementById(id); };
+    var fields = ['f-title', 'f-date', 'f-tags', 'f-excerpt', 'f-body'];
+
+    // default date = today
+    if (!$('f-date').value) $('f-date').value = new Date().toISOString().slice(0, 10);
+
+    function showToast(msg) {
+      var t = $('toast'); t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._tid); t._tid = setTimeout(function () { t.classList.remove('show'); }, 1800);
+    }
+
+    function readingTime(text) {
+      var words = (text.trim().match(/\S+/g) || []).length;
+      return Math.max(1, Math.round(words / 200));
+    }
+    function tagList(raw) {
+      return raw.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    }
+
+    function updatePreview() {
+      var title = $('f-title').value || 'Your title appears here';
+      var date = $('f-date').value;
+      var tags = tagList($('f-tags').value);
+      var body = $('f-body').value;
+
+      $('pv-title').textContent = title;
+      $('pv-meta').textContent = (date ? fmtDate(date) : '') + (body.trim() ? ' · ' + readingTime(body) + ' min read' : '');
+      $('pv-tags').innerHTML = tags.map(function (t) { return '<span class="tag">' + escapeHtml(t) + '</span>'; }).join('');
+      $('pv-body').innerHTML = body.trim()
+        ? renderMarkdown(body)
+        : '<p style="color:var(--muted)">Start typing to see your post.</p>';
+    }
+
+    function saveDraft() {
+      var data = {};
+      fields.forEach(function (id) { data[id] = $(id).value; });
+      try {
+        localStorage.setItem(KEY, JSON.stringify(data));
+        $('saved-flag').textContent = '✓ draft saved';
+      } catch (e) { /* private mode etc. */ }
+    }
+
+    function loadDraft() {
+      try {
+        var raw = localStorage.getItem(KEY);
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        fields.forEach(function (id) { if (data[id] != null) $(id).value = data[id]; });
+      } catch (e) {}
+    }
+
+    function generate() {
+      var title = $('f-title').value.trim();
+      var body = $('f-body').value;
+      if (!title) { showToast('Add a title first'); $('f-title').focus(); return; }
+      if (!body.trim()) { showToast('Write something first'); $('f-body').focus(); return; }
+
+      var obj = {
+        title: title,
+        slug: slugify(title),
+        date: $('f-date').value || new Date().toISOString().slice(0, 10),
+        tags: tagList($('f-tags').value),
+        excerpt: $('f-excerpt').value.trim(),
+        readingTime: readingTime(body),
+        content: body
+      };
+
+      // Build code with a template literal for content so quotes/newlines are safe.
+      var lines = [];
+      lines.push('  {');
+      lines.push('    title: ' + JSON.stringify(obj.title) + ',');
+      lines.push('    slug: ' + JSON.stringify(obj.slug) + ',');
+      lines.push('    date: ' + JSON.stringify(obj.date) + ',');
+      lines.push('    tags: ' + JSON.stringify(obj.tags) + ',');
+      lines.push('    excerpt: ' + JSON.stringify(obj.excerpt) + ',');
+      lines.push('    readingTime: ' + obj.readingTime + ',');
+      // escape backticks and ${ in content for the template literal
+      var safe = obj.content.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+      lines.push('    content:');
+      lines.push('`' + safe + '`');
+      lines.push('  },');
+
+      $('codeout').textContent = lines.join('\n');
+      $('output').style.display = 'block';
+      $('output').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyOut() {
+      var text = $('codeout').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { showToast('Copied — now paste into posts.js'); },
+          function () { fallbackCopy(text); });
+      } else { fallbackCopy(text); }
+    }
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); showToast('Copied — now paste into posts.js'); }
+      catch (e) { showToast('Select the text and copy manually'); }
+      document.body.removeChild(ta);
+    }
+
+    function clearDraft() {
+      if (!confirm('Clear this draft? This cannot be undone.')) return;
+      fields.forEach(function (id) { $(id).value = ''; });
+      $('f-date').value = new Date().toISOString().slice(0, 10);
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      $('output').style.display = 'none';
+      $('saved-flag').textContent = '';
+      updatePreview();
+      showToast('Draft cleared');
+    }
+
+    // wire up
+    loadDraft();
+    updatePreview();
+    fields.forEach(function (id) {
+      $(id).addEventListener('input', function () { updatePreview(); saveDraft(); });
+    });
+    $('btn-generate').addEventListener('click', generate);
+    $('btn-copy').addEventListener('click', copyOut);
+    $('btn-clear').addEventListener('click', clearDraft);
+  </script>
+</body>
+</html>
